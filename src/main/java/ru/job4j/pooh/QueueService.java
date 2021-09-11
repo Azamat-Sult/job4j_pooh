@@ -18,14 +18,15 @@ public class QueueService implements Service {
         }
         if (req.method().equals("GET")) {
             respStatus = 200;
-            try {
-                respText = queue.get(nameAndData[0]).poll();
-            } catch (NullPointerException e) {
+            ConcurrentLinkedQueue<String> theme = queue.get(nameAndData[0]);
+            if (theme == null) {
                 respText = "No queue with that name was found";
                 respStatus = 404;
-            }
-            if (respText == null) {
-                respText = "There are no new posts in the queue";
+            } else {
+                respText = queue.get(nameAndData[0]).poll();
+                if (respText == null) {
+                    respText = "There are no new posts in the queue";
+                }
             }
         }
         return new Resp(respText, respStatus);
